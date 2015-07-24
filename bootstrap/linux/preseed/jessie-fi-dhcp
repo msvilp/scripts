@@ -1,0 +1,60 @@
+# Preseed file for Debian Jessie (8.x)
+#
+# This preseed file is suitable for simple virtual machines in DHCP 
+# environments. The keymap is set to Finnish, but the language to English to 
+# avoid a partially translated system.
+#
+d-i debian-installer/language string en
+d-i debian-installer/country string FI
+d-i debian-installer/locale string en_US.UTF-8
+d-i localechooser/supported-locales multiselect fi_FI.UTF-8, en_US.UTF-8
+d-i keyboard-configuration/xkb-keymap select fi
+d-i netcfg/choose_interface select auto
+d-i netcfg/get_hostname string unassigned-hostname
+d-i netcfg/get_domain string unassigned-domain
+d-i netcfg/wireless_wep string
+d-i mirror/country string manual
+d-i mirror/http/hostname string ftp.fi.debian.org
+d-i mirror/http/directory string /debian
+d-i mirror/http/proxy string
+d-i passwd/make-user boolean false
+
+# You NEED to change the root password after install
+d-i passwd/root-password password root
+d-i passwd/root-password-again password root
+
+d-i clock-setup/utc boolean true
+d-i time/zone string Europe/Helsinki
+d-i clock-setup/ntp boolean true
+d-i partman-auto/disk string /dev/vda
+d-i partman-auto/method string regular
+d-i partman-lvm/device_remove_lvm boolean true
+d-i partman-md/device_remove_md boolean true
+d-i partman-lvm/confirm boolean true
+d-i partman-lvm/confirm_nooverwrite boolean true
+d-i partman-auto/choose_recipe select atomic
+d-i partman-partitioning/confirm_write_new_label boolean true
+d-i partman/choose_partition select finish
+d-i partman/confirm boolean true
+d-i partman/confirm_nooverwrite boolean true
+d-i partman-md/confirm boolean true
+d-i partman-partitioning/confirm_write_new_label boolean true
+d-i partman/choose_partition select finish
+d-i partman/confirm boolean true
+d-i partman/confirm_nooverwrite boolean true
+d-i apt-setup/non-free boolean true
+d-i apt-setup/contrib boolean true
+tasksel tasksel/first multiselect standard
+d-i pkgsel/include string openssh-server sudo wget pump
+d-i pkgsel/upgrade select none
+d-i grub-installer/only_debian boolean true
+d-i grub-installer/with_other_os boolean true
+d-i grub-installer/bootdev  string default
+d-i finish-install/reboot_in_progress note
+
+# Install pump (above) and remove dhclient due to a severe (=totally broken) in 
+# dhclient:
+#
+# <https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=671707>
+#
+d-i preseed/late_command string apt-get remove isc-dhcp-client
